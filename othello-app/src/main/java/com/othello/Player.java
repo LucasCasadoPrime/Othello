@@ -1,5 +1,6 @@
 package com.othello;
 public interface Player {
+    
     public void play(Grid grid) throws InterruptedException;
     public String getName();
     public char getC();

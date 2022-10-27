@@ -3,7 +3,6 @@ public class Validator implements IValidator {
 
     public Validator() {}
 
-    @Override
     public boolean checkIsFree(Grid grid, int i, int j, char c) {
         if (grid.getGrid()[i][j].getC() == ' ') {
             return true;
@@ -11,8 +10,7 @@ public class Validator implements IValidator {
         return false;
     }
 
-    @Override
-    public boolean rCheckUp(Grid grid, int i, int j, char C) {
+    private boolean rCheckUp(Grid grid, int i, int j, char C) {
         int k = i - 1;
         while (k >= 0) {
             if (grid.getGrid()[k][j].getC() == C) {
@@ -36,8 +34,7 @@ public class Validator implements IValidator {
         return false;
     }
 
-    @Override
-    public boolean rCheckDown(Grid grid, int i, int j, char c) {
+    private boolean rCheckDown(Grid grid, int i, int j, char c) {
         int k = i + 1;
         while (k < grid.getGrid().length) {
             if (grid.getGrid()[k][j].getC() == c) {
@@ -61,8 +58,7 @@ public class Validator implements IValidator {
         return false;
     }
 
-    @Override
-    public boolean rCheckLeft(Grid grid, int i, int j, char c) {
+    private boolean rCheckLeft(Grid grid, int i, int j, char c) {
         int k = j - 1;
         while (k >= 0) {
             if (grid.getGrid()[i][k].getC() == c) {
@@ -85,9 +81,8 @@ public class Validator implements IValidator {
         }
         return false;
     }
-
-    @Override
-    public boolean rCheckRight(Grid grid, int i, int j, char c) {
+    
+    private boolean rCheckRight(Grid grid, int i, int j, char c) {
         int k = j + 1;
         while (k < grid.getGrid().length) {
             if (grid.getGrid()[i][k].getC() == c) {

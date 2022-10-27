@@ -36,12 +36,23 @@ public class IA_lvl_0 implements Player{
     @Override
     public void play(Grid grid) throws InterruptedException {   
         int[] coords = process(grid);
+        int count = 0;
         Pion pion = new Pion(coords[0], coords[1], this._C);
-        if (validator.reverseRules(grid, coords[0], coords[1], pion.getC())) {
-          move.move(grid, pion);
-          Thread.sleep(500);
+        if (this.validator.reverseRules(grid, coords[0], coords[1], this._C)) {
+            count = 0;
+            move.move(grid, pion);
+            Thread.sleep(1000);
         }
-        
+        else {
+            count++;
+            if (count == 64) {
+                System.out.println("No more moves");
+                System.exit(0);
+            }
+            else {
+                play(grid);
+            }
+        }
     }
 
     public int[] process(Grid grid) {

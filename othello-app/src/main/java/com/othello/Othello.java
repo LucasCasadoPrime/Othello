@@ -18,23 +18,24 @@ public class Othello {
     }
 
     public void launchGame() throws InterruptedException {
-        String mode = getInput("1 PvP\n2 PvIA\n3 IAvIA\n4 Exit\nChoose a game mode: ");
+        int mode = Integer.parseInt(getInput("1 PvP\n2 PvIA\n3 IAvIA\n4 Exit\nChoose a game mode: "));
         switch (mode) {
-          case "1":
-            initPvp();
-            break;
-          case "2":
-            initPvIA();
-            break;
-          case "3":
-            initIAvIA();
-            break;
-          case "4":
-            System.exit(0);
-          default:
-            System.out.println("invalid input");
-            launchGame();
-            break;
+            case 1:
+                initPvp();
+                break;
+            case 2:
+                initPvIA();
+                break;
+            case 3:
+                initIAvIA();
+                break;
+            case 4:
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Invalid input");
+                launchGame();
+                break;
         }
         Game();
     }

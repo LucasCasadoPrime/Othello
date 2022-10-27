@@ -1,6 +1,8 @@
 package com.othello;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,6 +20,7 @@ public class OthelloRulesTest {
     Grid grid = new Grid(8);
     grid.initGrid();
    
-    assertFalse( validator.rCheckDown(grid, 0, 0, 'O'));
+    assertFalse(validator.reverseRules(grid, 0, 0, 'O'));
+    assertTrue(validator.reverseRules(grid, 4, 3, 'X'));
   }
 }
