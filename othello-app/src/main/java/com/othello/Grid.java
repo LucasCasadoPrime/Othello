@@ -24,6 +24,14 @@ public class Grid {
         this.grid = grid;
     }
 
+    public void setAllGrid(Pion pion) {
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                this.grid[i][j] = pion;
+            }
+        }
+    }
+
     public Pion[][] initGrid() {
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
