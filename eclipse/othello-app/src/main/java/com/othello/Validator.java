@@ -1,4 +1,7 @@
 package com.othello;
+
+import com.othello.model.Grid;
+
 public class Validator implements IValidator {
 
     public Validator() {}
@@ -100,6 +103,19 @@ public class Validator implements IValidator {
                 for (int l = j + 1; l < k;) {
                     grid.getGrid()[i][l].setC(c);
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean aMoveIsPossible(Grid grid) {
+        for (int i = 0; i < grid.getGrid().length; i++) {
+            for (int j = 0; j < grid.getGrid().length; j++) {
+                if (grid.getGrid()[i][j].getC() == ' ') {
+                    if (rCheckUp(grid, i, j, 'X') || rCheckDown(grid, i, j, 'X') || rCheckLeft(grid, i, j, 'X') || rCheckRight(grid, i, j, 'X') || rCheckUp(grid, i, j, 'O') || rCheckDown(grid, i, j, 'O') || rCheckLeft(grid, i, j, 'O') || rCheckRight(grid, i, j, 'O')) {
+                        return true;
+                    }
                 }
             }
         }

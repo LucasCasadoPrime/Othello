@@ -1,4 +1,9 @@
 package com.othello;
+
+import com.othello.model.Human;
+import com.othello.model.IA_lvl_0;
+import com.othello.model.Player;
+
 public class FactoryPlayer {
     
     public static Player createPlayer(String name, char C) {

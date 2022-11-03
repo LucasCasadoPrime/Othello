@@ -1,4 +1,7 @@
 package com.othello;
+
+import com.othello.model.Grid;
+
 public class Display {
     public Grid display(Grid grid) {
         for (int i = 0; i < grid.getSize(); i++) {

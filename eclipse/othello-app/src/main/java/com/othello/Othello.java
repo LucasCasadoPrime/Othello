@@ -1,29 +1,30 @@
 package com.othello;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.stereotype.Component;
 
-@org.springframework.stereotype.Component
+import com.othello.model.Grid;
+import com.othello.model.Player;
+
+@Component
 public class Othello {
 
     private Grid grid;
     private Display display;
     private ArrayList<Player> players;
-    private MongoConfig mgb;
-    @Autowired
-    private MongoOperations ops;
 
-    public Othello() {}
+    public Othello() {
+        initOthello();
+        try {
+            launchGame();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void initOthello() {
-        this.mgb = new MongoConfig();
-        this.mgb.setMongoServers("localhost:27017");
-        this.mgb.setMongoDbAuthenticationDB("admin");
-        this.mgb.setMongoDbLogin("admin");
-        this.mgb.setMongoDbPassword("ESII3824");
-        this.mgb.setMongoDBName("othello");
         this.grid = new Grid(8);
         this.display = new Display();
         this.players = new ArrayList<Player>();
@@ -54,22 +55,19 @@ public class Othello {
     }
 
     public void initPvp() {
+     
         players.add(FactoryPlayer.createPlayer("Human", getInput("Player 1 color: ").charAt(0)));
         players.add(FactoryPlayer.createPlayer("Human", getInput("Player 2 color: ").charAt(0)));
     }
 
     public void Game() throws InterruptedException {
-        while (true) {
+        while (!grid.isFull()) {
             for (Player player : players) {
                 display.display(grid);
-                player.play(grid);
-                if (grid.isFull()) {
-                    System.out.println("Game over");
-                    System.out.println("Player 1 score: " + grid.countPions(players.get(0).getC()));
-                    System.out.println("Player 2 score: " + grid.countPions(players.get(1).getC()));
-                    System.exit(0);
+                if (player.play(grid)) {
+                    System.out.println("No move possible");
                 }
-                System.out.println();
+
             }
         }
     }
