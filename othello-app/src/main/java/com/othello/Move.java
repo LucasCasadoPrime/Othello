@@ -1,4 +1,8 @@
 package com.othello;
+
+import com.othello.model.Grid;
+import com.othello.model.Pion;
+
 public class Move {
 
     public Grid move(Grid grid, Pion pion) {

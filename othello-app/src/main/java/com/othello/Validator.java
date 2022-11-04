@@ -1,4 +1,7 @@
 package com.othello;
+
+import com.othello.model.Grid;
+
 public class Validator implements IValidator {
 
     public Validator() {}
@@ -104,6 +107,19 @@ public class Validator implements IValidator {
             }
         }
         return false;
+    }
+
+    public boolean noMoveisPossible(Grid grid, char c) {
+        for (int i = 0; i < grid.getGrid().length; i++) {
+            for (int j = 0; j < grid.getGrid().length; j++) {
+                if (checkIsFree(grid, i, j, c)) {
+                    if (reverseRules(grid, i, j, c)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     @Override

@@ -5,14 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.mockito.Mockito.*;
-
 import java.util.Scanner;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.othello.model.Grid;
+import com.othello.model.Human;
+import com.othello.model.IA_lvl_0;
+import com.othello.model.Pion;
+import com.othello.model.Player;
 
 @RunWith(MockitoJUnitRunner.class)
 
@@ -20,6 +27,13 @@ public class OthelloRulesTest {
   
   @InjectMocks
   private Validator validator;
+  
+  @Mock
+  private Scanner sc;
+  
+  @Before
+  private void setUp() {
+  }
   
   @Test
   public void RulesTest() {
@@ -56,8 +70,17 @@ public class OthelloRulesTest {
   public void FactoryTest() {
     Player player = FactoryPlayer.createPlayer("IA_lvl_0", 'X');
     assertTrue(player instanceof IA_lvl_0);
+    
+    Player player2 = FactoryPlayer.createPlayer("Human", 'X');
+    assertTrue(player2 instanceof Human);
+    
+    Player player3 = FactoryPlayer.createPlayer("IA_lvl_0", 'X');
+    assertFalse(player3 instanceof Human);
+    
+    Player player4 = FactoryPlayer.createPlayer("", 'X');
+    assertFalse(player4 instanceof IA_lvl_0); 
   }
-
+  
   @Test
   public void GridTest() {
     Grid grid = new Grid(8);
@@ -76,7 +99,7 @@ public class OthelloRulesTest {
     grid.setAllGrid(pion);
     assertTrue(grid.isFull());
   }
-
+  
   @Test
   public void PionTest() {
     Pion pion = new Pion(0,0,'X');
@@ -92,13 +115,13 @@ public class OthelloRulesTest {
     assertEquals(pion.getY(), 1);
     assertEquals(pion.getC(), 'O');
   }
-
+  
   @Test
-  public void HumanTest() throws InterruptedException {
+  public void HumanTest() {
+  Grid grid  = new Grid(8);
   Human player = new Human("Human",'X');
-  int[] tab = new int[2];
-  tab[0] = 2;
-  tab[1] = 3;
+  ReflectionTestUtils.setField(player, "sc", sc);
+  int[] tab = new int[] {2,3};
     // Verifie si le joueur est bien initialisé
     assertEquals(player.getC(), 'X');
     assertEquals(player.getName(), "Human");
@@ -107,7 +130,10 @@ public class OthelloRulesTest {
     player.setName("IA");
     assertEquals(player.getC(), 'O');
     assertEquals(player.getName(), "IA");
+    
   }
+  
+  
 
   @Test
   public void IATest() {
@@ -121,7 +147,7 @@ public class OthelloRulesTest {
     assertEquals(player.getC(), 'O');
     assertEquals(player.getName(), "Human");
   }
-
+  
   @Test
   public void MoveTest() {
     Grid grid = new Grid(8);
@@ -131,13 +157,5 @@ public class OthelloRulesTest {
     // Verifie si le mouvement fonctionne
     move.move(grid, pion);
     assertEquals(grid.getGrid()[2][3].getC(), 'X');
-  }
-
-  @Test
-  public void displayTest() {
-    Grid grid = new Grid(8);
-    grid.initGrid();
-    // Verifie si l'affichage fonctionne
-    grid.displayGrid();
   }
 }
