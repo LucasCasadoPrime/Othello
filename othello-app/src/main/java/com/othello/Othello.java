@@ -1,6 +1,7 @@
 package com.othello;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.othello.model.Billboard;
 import com.othello.model.Grid;
 import com.othello.model.Player;
 import com.othello.model.Score;
@@ -19,6 +21,7 @@ public class Othello {
   @Autowired
   private ScoreRepository scoreRepository;
 
+  private Billboard board;
   private Grid grid;
   private Display display;
   private ArrayList<Player> players;
@@ -35,14 +38,28 @@ public class Othello {
   }
 
   public void initOthello() {
+    board = new Billboard();
     this.grid = new Grid(8);
     this.display = new Display();
     this.players = new ArrayList<Player>();
     grid.initGrid();
   }
 
+
+  public void Bb() {
+    ArrayList<Score> scores = scoreRepository.findTop10ByOrderByScoreDesc();
+    scores.sort(Comparator.comparing(Score::getScore).reversed());
+    System.out.println("\nTop 10 scores:\n");
+    for (Score score : scores) {
+      System.out.println(score.getName() + " " + score.getScore());
+    }
+    System.out.println("____________________");
+  }
+
+
   public void launchGame() throws InterruptedException {
-    int mode = Integer.parseInt(getInput("1 PvP\n2 PvIA\n3 IAvIA\n4 Exit\nChoose a game mode: "));
+    Bb();
+    int mode = Integer.parseInt(getInput("\n1 PvP\n2 PvIA\n3 IAvIA\n4 Exit\nChoose a game mode: "));
     switch (mode) {
       case 1:
         initPvp();
@@ -65,19 +82,21 @@ public class Othello {
   }
 
   public void initPvp() {
-
     players.add(FactoryPlayer.createPlayer("Human", getInput("Player 1 color: ").charAt(0)));
     players.add(FactoryPlayer.createPlayer("Human", getInput("Player 2 color: ").charAt(0)));
   }
 
   public ArrayList<Score> saveScore(Grid grid) {
-    ArrayList<com.othello.model.Score> scoreList = new ArrayList<Score>();
-    Score score1 = new Score();
-    Score score2 = new Score();
-    scoreList.add(score1);
-    scoreList.add(score2);
-    scoreRepository.saveAll(scoreList);
-    return scoreList;
+    ArrayList<Score> scoreList = new ArrayList<Score>();
+      for (int i = 0; i < 2; i++) {
+        if (players.get(i).getC() == 'X') {
+          scoreList.add(new Score(players.get(i).getName(), grid.countPions('X')));
+        }
+        if (players.get(i).getC() == 'O') {
+          scoreList.add(new Score(players.get(i).getName(), grid.countPions('O')));
+        }
+      }
+      return scoreList;
   }
 
   public void Game() throws InterruptedException {
@@ -88,7 +107,7 @@ public class Othello {
             display.display(grid);
             if (grid.isFull()) {
               System.out.println("Game over");
-              saveScore(grid);
+              scoreRepository.saveAll(saveScore(grid));
               System.exit(0);
             }
             break;
@@ -96,7 +115,7 @@ public class Othello {
             continue;
           case 2:
             System.out.println("no move possible for " + player.getName());
-            saveScore(grid);
+            scoreRepository.saveAll(saveScore(grid));
             System.exit(0);
             break;
           default:
@@ -117,9 +136,9 @@ public class Othello {
   }
 
   public String getInput(String message) {
-    Scanner sc = new Scanner(System.in);
-    System.out.println(message);
-    return sc.nextLine();
+      Scanner sc = new Scanner(System.in);
+      System.out.println(message);
+      return sc.nextLine();
   }
 
 }

@@ -11,19 +11,11 @@ public class Score {
     public Score() {
     }
 
-    public Score(String id, String name, int score) {
-        this.id = id;
+    public Score(String name, int score) {
         this.name = name;
         this.score = score;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
