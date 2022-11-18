@@ -1,7 +1,6 @@
 package com.othello;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
@@ -9,10 +8,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.othello.api.GameManagerApiIpml;
 import com.othello.model.Billboard;
 import com.othello.model.Grid;
 import com.othello.model.Player;
-import com.othello.model.Score;
+import com.othello.repositories.GridRepository;
 import com.othello.repositories.ScoreRepository;
 
 @Component
@@ -21,10 +21,15 @@ public class Othello {
   @Autowired
   private ScoreRepository scoreRepository;
 
-  private Billboard board;
+  @Autowired
+  private GridRepository gridRepository;
+  
   private Grid grid;
+  @Autowired
+  private GameManagerApiIpml gameManager;
+  @Autowired
   private Display display;
-  private ArrayList<Player> players;
+  private ArrayList<Player> players = new ArrayList<Player>();;
 
   @PostConstruct
   void init() {
@@ -38,27 +43,12 @@ public class Othello {
   }
 
   public void initOthello() {
-    board = new Billboard();
-    this.grid = new Grid(8);
-    this.display = new Display();
-    this.players = new ArrayList<Player>();
-    grid.initGrid();
+    new Billboard();
+    this.grid = this.gameManager.newGameOrLoad(grid, gridRepository);
   }
-
-
-  public void Bb() {
-    ArrayList<Score> scores = scoreRepository.findTop10ByOrderByScoreDesc();
-    scores.sort(Comparator.comparing(Score::getScore).reversed());
-    System.out.println("\nTop 10 scores:\n");
-    for (Score score : scores) {
-      System.out.println(score.getName() + " " + score.getScore());
-    }
-    System.out.println("____________________");
-  }
-
 
   public void launchGame() throws InterruptedException {
-    Bb();
+    gameManager.bestScores(scoreRepository);
     int mode = Integer.parseInt(getInput("\n1 PvP\n2 PvIA\n3 IAvIA\n4 Exit\nChoose a game mode: "));
     switch (mode) {
       case 1:
@@ -78,61 +68,48 @@ public class Othello {
         launchGame();
         break;
     }
+    System.out.println("____________________");
     Game();
   }
 
-  public void initPvp() {
-    players.add(FactoryPlayer.createPlayer("Human", getInput("Player 1 color: ").charAt(0)));
-    players.add(FactoryPlayer.createPlayer("Human", getInput("Player 2 color: ").charAt(0)));
-  }
-
-  public ArrayList<Score> saveScore(Grid grid) {
-    ArrayList<Score> scoreList = new ArrayList<Score>();
-      for (int i = 0; i < 2; i++) {
-        if (players.get(i).getC() == 'X') {
-          scoreList.add(new Score(players.get(i).getName(), grid.countPions('X')));
-        }
-        if (players.get(i).getC() == 'O') {
-          scoreList.add(new Score(players.get(i).getName(), grid.countPions('O')));
-        }
-      }
-      return scoreList;
-  }
-
   public void Game() throws InterruptedException {
-    while (true) {
-      for (Player player : players) {
-        switch (player.play(grid)) {
-          case 0:
-            display.display(grid);
-            if (grid.isFull()) {
-              System.out.println("Game over");
-              scoreRepository.saveAll(saveScore(grid));
-              System.exit(0);
-            }
-            break;
-          case 1:
-            continue;
-          case 2:
-            System.out.println("no move possible for " + player.getName());
-            scoreRepository.saveAll(saveScore(grid));
-            System.exit(0);
-            break;
-          default:
-            break;
-        }
+    int count = 0;
+    display.display(grid);
+    gameManager.initTurns(players);
+    while (!gameManager.isEnd(grid, players)) {
+      int choice = gameManager.whoPlay(players, grid);
+      switch (choice) {
+        case 0:
+          display.display(grid);
+          gameManager.nextPlayer(players);
+          count = 0;
+          break;
+        case 1:
+          count ++;
+          gameManager.forceQuit(count);
+          continue;
+        case 3:
+          gameManager.quitGame();
+          break;
+        default:
+          break;
       }
     }
   }
 
+  public void initPvp() {
+    players.add(FactoryPlayer.createPlayer("Human", getInput("Player 1 name: "),getInput("Player 1 color: ").charAt(0)));
+    players.add(FactoryPlayer.createPlayer("Human",getInput("Player 2 name: "), getInput("Player 2 color: ").charAt(0)));
+  }
+  
   public void initPvIA() {
-    players.add(FactoryPlayer.createPlayer("Human", getInput("Player color: ").charAt(0)));
-    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA level: ")), getInput("IA color: ").charAt(0)));
+    players.add(FactoryPlayer.createPlayer("Human", getInput("Player name: "), getInput("Player color: ").charAt(0)));
+    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA 1 level: ")), getInput("Player name: "), getInput("IA color: ").charAt(0)));
   }
 
   public void initIAvIA() {
-    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA 1 level: ")), getInput("IA 1 color: ").charAt(0)));
-    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA 2 level: ")), getInput("IA 2 color: ").charAt(0)));
+    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA 1 level: ")), getInput("Player name: "), getInput("IA 1 color: ").charAt(0)));
+    players.add(FactoryPlayer.createPlayer("IA_lvl_" + Integer.parseInt(getInput("IA 2 level: ")), getInput("Player name: "), getInput("IA 2 color: ").charAt(0)));
   }
 
   public String getInput(String message) {

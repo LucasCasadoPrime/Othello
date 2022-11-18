@@ -5,22 +5,22 @@ import java.util.ArrayList;
 
 public class Billboard {
   
-  ArrayList<String> board;
+  ArrayList<Score> board;
   
   public Billboard() {
 
-    board = new ArrayList<String>();
+    board = new ArrayList<Score>();
   }
 
   public int getSize() {
     return board.size();
   }
 
-  public ArrayList<String> getBoard() {
+  public ArrayList<Score> getBoard() {
     return board;
   }
 
-  public void setBoard(ArrayList<String> board) {
+  public void setBoard(ArrayList<Score> board) {
     this.board = board;
   }
 

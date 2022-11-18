@@ -46,7 +46,6 @@ public class OthelloRulesTest {
     // Verifie si un pion de la meme couleur peut etre posé en dessous d'un autre
     assertFalse(validator.reverseRules(grid, 5, 3, 'O'));
     // Verifie si un mouvement est possible
-    assertTrue(validator.noMoveisPossible(grid, 'X'));
     
   }
 

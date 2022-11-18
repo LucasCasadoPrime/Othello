@@ -7,59 +7,86 @@ import com.othello.Validator;
 
 public class Human implements Player {
 
-  private String _name;
-  private char _C;
+  private String type;
+  private String name;
+  private char c;
+  private boolean turn;
   private Move move;
   private Validator validator;
   private Scanner sc = new Scanner(System.in);
 
-  public Human(String name, char C) {
+  public Human() {}
+
+  public Human(String type, String name, char c) {
+    this.type = type;
+    this.name = name;
+    this.c = c;
     this.move = new Move();
     this.validator = new Validator();
-    this._name = name;
-    this._C = C;
   }
 
   @Override
   public String getName() {
-    return this._name;
+    return this.name;
   }
 
   @Override
   public char getC() {
-    return this._C;
+    return this.c;
   }
 
   @Override
   public void setName(String name) {
-    this._name = name;
+    this.name = name;
   }
 
   @Override
   public void setC(char C) {
-    this._C = C;
+    this.c = C;
   }
 
   @Override
-  public int play(Grid grid) throws InterruptedException {
-    int[] coords = getCoords();
-    Pion pion = new Pion(coords[0], coords[1], this._C);
-    if (validator.reverseRules(grid,coords[0], coords[1], _C)) {
-        move.move(grid, pion);
-        Thread.sleep(500);
-        return 0;
+  public int play(Grid grid) {
+    String coords = getCoords();
+    if (coords.equals("quit")) {
+      return 3;
     }
-    if (validator.noMoveisPossible(grid, _C)) {
-        return 2;
+    if (coords.equals("save and quit")) {
+      return 4;
+    }
+    int x = Integer.parseInt(coords.split(" ")[0]);
+    int y = Integer.parseInt(coords.split(" ")[1]);
+    Pion pion = new Pion(x, y, this.c);
+    if (validator.reverseRules(grid,x, y, c)) {
+      move.move(grid, pion);
+      return 0;
     }
     return 1;
   }
 
-  private int[] getCoords() {
-    int[] coords = new int[2];
-    System.out.print("Where do you want to put your coin ?: ");
-    coords[0] = sc.nextInt();
-    coords[1] = sc.nextInt();
+  private String getCoords() {
+    System.out.println("Enter the coordinates of the pion you want to place (x,y): ");
+    String coords = sc.nextLine();
     return coords;
+  }
+
+  @Override
+  public boolean isTurn() {
+    return this.turn;
+  }
+
+  @Override
+  public void setTurn(boolean turn) {
+    this.turn = turn;
+  }
+
+  @Override
+  public String getType() {
+    return this.type;
+  }
+
+  @Override
+  public void setType(String type) {
+    this.type = type;
   }
 }

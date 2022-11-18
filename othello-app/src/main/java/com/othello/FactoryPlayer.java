@@ -6,12 +6,12 @@ import com.othello.model.Player;
 
 public class FactoryPlayer {
     
-    public static Player createPlayer(String name, char C) {
-        if (name.equals("Human")) {
-            return new Human(name, C);
+    public static Player createPlayer(String type, String name, char c) {
+        if (type.equals("Human")) {
+            return new Human(type, name, c);
         } 
-        else if (name.equals("IA_lvl_0")) {
-            return new IA_lvl_0(name, C);
+        else if (type.equals("IA_lvl_0")) {
+            return new IA_lvl_0(type, name, c);
         }
         return null;
     }
