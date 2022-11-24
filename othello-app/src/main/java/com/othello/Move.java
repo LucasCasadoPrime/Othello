@@ -11,5 +11,4 @@ public class Move {
         }
         return grid;
     }
-
 }

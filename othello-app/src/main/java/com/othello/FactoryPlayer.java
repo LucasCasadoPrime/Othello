@@ -15,5 +15,4 @@ public class FactoryPlayer {
         }
         return null;
     }
-
 }

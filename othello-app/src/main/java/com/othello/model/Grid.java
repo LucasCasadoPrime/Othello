@@ -1,7 +1,6 @@
 package com.othello.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.othello.Validator;
 
 @Document(collection = "grid")

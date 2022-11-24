@@ -212,7 +212,6 @@ public class Validator implements IValidator {
         }
         return false;
     }
-
     
     public boolean checkIfNoMove(Grid grid, char c) {
         for (int i = 0; i < grid.getGrid().length; i++) {
@@ -227,7 +226,6 @@ public class Validator implements IValidator {
         return true;
 
     }
-
 
     @Override
     public boolean reverseRules(Grid grid, int i, int j, char c) {

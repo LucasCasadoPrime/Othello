@@ -7,13 +7,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.othello.api.DisplayApiImpl;
 import com.othello.model.Grid;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DisplayTest {
     
     @InjectMocks
-    private Display display;
+    private DisplayApiImpl display;
     
     @Test
     public void displayTest() {

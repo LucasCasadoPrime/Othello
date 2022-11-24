@@ -4,18 +4,33 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Scanner;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.othello.model.Billboard;
 import com.othello.model.Grid;
+import com.othello.model.Modes;
 import com.othello.model.Player;
 import com.othello.model.Score;
 import com.othello.repositories.GridRepository;
 import com.othello.repositories.ScoreRepository;
 
-public class GameManagerApiIpml implements GameManagerApi{
+@Component
+public class GameManagerApiIpml implements GameManagerApi {
+  
+  @Autowired
+  private ScoreRepository scoreRepository;
+
+  @Autowired
+  private GridRepository gridRepository;
+
+  @Autowired
+  private DisplayApi displayApi;
+  
+  private Grid grid;
 
   public GameManagerApiIpml() {}
   
+  @Override
   public void nextPlayer(ArrayList<Player> players) {
     if (players.get(0).isTurn()) {
       players.get(0).setTurn(false);
@@ -27,11 +42,13 @@ public class GameManagerApiIpml implements GameManagerApi{
     }
   }
 
+  @Override
   public void initTurns(ArrayList<Player> players) {
     players.get(0).setTurn(true);
     players.get(1).setTurn(false);
   }
 
+  @Override
   public int whoPlay(ArrayList<Player> players, Grid grid) throws InterruptedException {
     if (players.get(0).isTurn()) {
       return players.get(0).play(grid);
@@ -41,13 +58,13 @@ public class GameManagerApiIpml implements GameManagerApi{
     }
   }
 
+  @Override
   public boolean isEnd(Grid grid, ArrayList<Player> players) {
     if (grid.isFull()) {
       return true;
     }
     return false;
   }
-
 
   public ArrayList<Score> saveScore(Grid grid, ArrayList<Player> players) {
     ArrayList<Score> scoreList = new ArrayList<Score>();
@@ -62,7 +79,8 @@ public class GameManagerApiIpml implements GameManagerApi{
       return scoreList;
   }
 
-  public void bestScores(ScoreRepository scoreRepository) {
+  @Override
+  public void bestScores() {
     ArrayList<Score> scores = scoreRepository.findTop10ByOrderByScoreDesc();
     scores.sort(Comparator.comparing(Score::getScore).reversed());
     if (scores.size() == 0) {
@@ -78,7 +96,8 @@ public class GameManagerApiIpml implements GameManagerApi{
     System.out.println("____________________");
   }
 
-  public Grid newGameOrLoad(Grid grid, GridRepository gridRepository ) {
+  @Override
+  public Grid newGameOrLoad() {
     Optional<Grid> gridOpt = gridRepository.findTopByOrderByIdDesc();
     String choice = getInput("New game or load game? (new/load)");
     if (choice.equals("load")) {
@@ -87,7 +106,7 @@ public class GameManagerApiIpml implements GameManagerApi{
       }
       else {
         System.out.println("No game to load");
-        newGameOrLoad(grid, gridRepository);
+        newGameOrLoad();
       }
     }
     else if (choice.equals("new")) {
@@ -95,26 +114,30 @@ public class GameManagerApiIpml implements GameManagerApi{
     }
     else {
       System.out.println("Invalid choice");
-      newGameOrLoad(grid, gridRepository);
+      newGameOrLoad();
     }
     return grid;
   }
 
-  public void saveGrid(Grid grid, GridRepository gridRepository) {
+  @Override
+  public void saveGrid(Grid grid) {
     gridRepository.save(grid);
     System.exit(0);
   }
 
+  @Override
   public void quitGame() {
     System.exit(0);
   }
 
+  @Override
   public void  forceQuit(int i) {
     if (i == 1000) {
       System.exit(0);
     }
   }
   
+  @Override
   public String getInput(String message) {
     Scanner sc = new Scanner(System.in);
     System.out.println(message);
@@ -122,21 +145,20 @@ public class GameManagerApiIpml implements GameManagerApi{
   }
 
   @Override
-  public ArrayList<String> getModes() {
-    ArrayList<String> modes = new ArrayList<String>();
-    modes.add("PvP");
-    modes.add("PvIA");
-    modes.add("IAvIA");
-    return modes;
-  }
-
-  @Override
-  public Billboard getBillboard(ScoreRepository scoreRepository) {
+  public Billboard getBillboard() {
     Billboard board = new Billboard();
     ArrayList<Score> scores = scoreRepository.findTop10ByOrderByScoreDesc();
     scores.sort(Comparator.comparing(Score::getScore).reversed());
     board.setBoard(scores);
     return board;
   }
-
+  
+  @Override
+  public ArrayList<String> getModes() {
+    ArrayList<String> m = new ArrayList<String>();
+    for (Modes mode : Modes.values()) {
+      m.add(mode.getMode());
+    }
+    return m;
+  }
 }
